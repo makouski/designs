@@ -26,7 +26,7 @@ paths = [
 ];
 
 // visually inspect 3D maze
-show_all_paths();
+//show_all_paths();
 
 
 module show_all_paths(){

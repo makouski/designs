@@ -292,12 +292,13 @@ module lid($fa=3,$fs=0.6) {
         // cut out for x bolt
         x_dummy_in(0.1);
         // cut for handle
+        handle_cut_d = a+0.4;
         hull() {
             translate([-d + outer_hpx, 0, z_bolt_wall+xy_bolt_thk])
-            cylinder(h=2*z_bolt_gap, d = a);
+            cylinder(h=2*z_bolt_gap, d = handle_cut_d);
             
             translate([outer_hpx, 0, z_bolt_wall+xy_bolt_thk])
-            cylinder(h=2*z_bolt_gap, d = a);
+            cylinder(h=2*z_bolt_gap, d = handle_cut_d);
         }
         
         // cut for z bolt
@@ -306,10 +307,10 @@ module lid($fa=3,$fs=0.6) {
             // cut for handle
             hull() {
                 translate([-d + outer_hpx, 0, z_bolt_gap])
-                cylinder(h=2*z_bolt_gap, d = a);
+                cylinder(h=2*z_bolt_gap, d = handle_cut_d);
                 
                 translate([outer_hpx, 0, z_bolt_gap])
-                cylinder(h=2*z_bolt_gap, d = a);
+                cylinder(h=2*z_bolt_gap, d = handle_cut_d);
             }
         }
         
@@ -319,10 +320,10 @@ module lid($fa=3,$fs=0.6) {
             // cut for handle
             hull() {
                 translate([-d + outer_hpx, 0, z_bolt_wall+2*xy_bolt_thk])
-                cylinder(h=2*z_bolt_gap, d = a);
+                cylinder(h=2*z_bolt_gap, d = handle_cut_d);
                 
                 translate([outer_hpx, 0, z_bolt_wall+2*xy_bolt_thk])
-                cylinder(h=2*z_bolt_gap, d = a);
+                cylinder(h=2*z_bolt_gap, d = handle_cut_d);
             }
         }
     }
@@ -351,24 +352,24 @@ module lid_cover() {
         
         // cut out for x bolt
         hull(){
-            x_dummy_in(0.1);
+            x_dummy_in(0.15);
             translate([0,0,z_bolt_thk])
-            x_dummy_in(0.1);
+            x_dummy_in(0.15);
         }
         // cut for z bolt
         rotate([0,0,-120]){
             hull(){
-                z_dummy_in(0.1);
+                z_dummy_in(0.15);
                 translate([0,0,z_bolt_thk])
-                z_dummy_in(0.1);
+                z_dummy_in(0.15);
             }
         }
         // cut for y bolt
         rotate([0,0,120]){
             hull(){
-                y_dummy_in(0.1);
+                y_dummy_in(0.15);
                 translate([0,0,z_bolt_thk])
-                y_dummy_in(0.1);
+                y_dummy_in(0.15);
             }
         }
     }
@@ -451,7 +452,7 @@ dR = (d_out_b_cent - d_out_b)/2;
 Rcur = dR/2 + (h_b^2)/(8*dR);
 
 // cutouts for plank gaps
-pc_depth = 0.6;
+pc_depth = 0.8;
 pc_width = 0.8;
 
 module body($fa=3){
@@ -543,13 +544,15 @@ module body_bottom_cover(extra=0, $fa=3){
 
 module handle(stem = 0, $fa=5, $fs=0.8){
     cylinder(h=l_wall_thk, d1 = 2*a - 2, d2 = 2*a);
-    
     translate([0,0,l_wall_thk-0.02])
-    cylinder(h=stem, d = a - 0.1);
-    
-    translate([0,0,stem + l_wall_thk-0.04])
+    cylinder(h=2*l_wall_thk, d=2*a);
+
+    translate([0,0,3*l_wall_thk-0.02])
+    cylinder(h=stem, d = a - 0.2);
+
+    translate([0,0,stem + 3*l_wall_thk-0.2])
     intersection(){
-        thread(-0.1);
+        thread(-0.2);
         cylinder(h=1.6*(ah+0.8), d1=2*a, d2=0);
     }
 }
@@ -559,17 +562,17 @@ module all_handles(){
     handle(stem = 2*l_wall_thk + 0.4);
     // handle for y bolt
     translate([15,50,0])
-    handle(stem = 2*l_wall_thk + xy_bolt_thk + 0.5);
+    handle(stem = 2*l_wall_thk + xy_bolt_thk + 0.6);
     // handle for x bolt
     translate([30,50,0])
-    handle(stem = 2*l_wall_thk + 2*xy_bolt_thk + 0.6);
+    handle(stem = 2*l_wall_thk + 2*xy_bolt_thk + 0.7);
 }
 //all_handles();
 
 // thread for handles
 module thread(delta=0, $fa=5, $fs=0.6){
-    th_d_out = a - 0.3 + delta;
-    th_d_in = (a - 0.3 + delta)*0.8;
+    th_d_out = a - 0.4 + delta;
+    th_d_in = (a - 0.4 + delta)*0.7;
     th_step = a/3;
     th_len = ah + 0.8;
     intersection(){
