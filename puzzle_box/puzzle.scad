@@ -4,9 +4,9 @@ include<maze_def.scad>
 
 // sizes
 //pin height
-ah = 3;
+ah = 2.5;
 // pin width
-a = 5;
+a = 4;
 
 // travel_ratio is defined with the maze
 // bolts travel
@@ -21,6 +21,19 @@ h_b = 120;
 
 // handle diameter with adjustment
 handle_d = 0.85*sin(60)*d/2;
+
+
+// all parts to print ////////////////////////////////////////////
+//x_bolt();
+//y_bolt();
+//z_bolt();
+//lid();
+//lid_cover();
+//all_handles();
+//body_bottom_cover();
+//body();
+//////////////////////////////////////////////////////////////////
+
 
 // translate + project
 function translate_p (p, trn) = 
@@ -597,7 +610,7 @@ module all_handles(){
 module thread(delta=0, $fa=5, $fs=0.6){
     th_d_out = handle_d - 0.3 + delta;
     th_d_in = (handle_d - 0.3)*0.7 + delta;
-    th_step = xy_bolt_thk/2.5;
+    th_step = 1.8;
     th_len = xy_bolt_thk;
     intersection(){
         linear_extrude(th_len, twist=-360*th_len/th_step){
