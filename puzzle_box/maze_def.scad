@@ -1,7 +1,8 @@
 $fs = 0.4;
 
-// important for defining the maze
-travel_ratio = 3;
+// important for defining the maze:
+// how many steps (in units of pin size) it takes to get to the finish
+travel_steps = 3;
 
 // labyrinth path: [ [[x1,y1,z1],[x2,y2,z2]], [], [], ...]
 // x, y, z are in units of a
