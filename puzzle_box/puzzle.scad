@@ -226,8 +226,8 @@ module final_pos(){
 bolt_shift = lock_in_disp - pin_hl - d;
 
 module z_dummy_in(extra=0){
-    translate([bolt_shift-extra, -(bolt_w+2*extra)/2, -extra])
-    cube([bolt_tot_len+2*extra, bolt_w+2*extra, z_bolt_thk + 2*extra]);
+    translate([bolt_shift, -(bolt_w+2*extra)/2, -extra])
+    cube([bolt_tot_len+extra, bolt_w+2*extra, z_bolt_thk + 2*extra]);
 }
 //z_dummy_in(0.2);
 
@@ -281,11 +281,25 @@ module lid($fa=3,$fs=0.6) {
             translate([bolt_shift, -(bolt_w+0.2)/2, z_bolt_thk])
             cube([bolt_tot_len, bolt_w+0.2, l_wall_thk]);
             // stability rim
+            stab_rim_outer_d = d_in_b-3-0.4;
+            stab_rim_inner_d = d_in_b-3-0.4-2*l_wall_thk;
             difference() {
-                cylinder(h=z_bolt_thk+l_wall_thk, d=d_in_b-3-0.4);
+                cylinder(h=z_bolt_thk+l_wall_thk, d=stab_rim_outer_d);
                 translate([0,0,-0.1])
-                cylinder(h=z_bolt_thk+l_wall_thk+0.2, d=d_in_b-3-0.4-2*l_wall_thk);
+                cylinder(h=z_bolt_thk+l_wall_thk+0.2, d=stab_rim_inner_d);
             }
+            // three radial ridges for lid stability
+            ridge_end = (stab_rim_inner_d+0.4)/2;
+            ridge_start = -(bolt_shift-l_wall_thk-0.1);
+            rotate([0,0,60])
+            translate([ridge_start, -l_wall_thk/2, 0])
+            cube([ridge_end - ridge_start, l_wall_thk, z_bolt_thk+l_wall_thk+0.2]);
+            rotate([0,0,-60])
+            translate([ridge_start, -l_wall_thk/2, 0])
+            cube([ridge_end - ridge_start, l_wall_thk, z_bolt_thk+l_wall_thk+0.2]);
+            rotate([0,0,180])
+            translate([ridge_start, -l_wall_thk/2, 0])
+            cube([ridge_end - ridge_start, l_wall_thk, z_bolt_thk+l_wall_thk+0.2]);
         }
         
         // cut outs in the stability rim
@@ -302,7 +316,7 @@ module lid($fa=3,$fs=0.6) {
         // cut out for x bolt
         x_dummy_in(0.1);
         // cut for handle
-        handle_cut_d = handle_d+0.2;
+        handle_cut_d = handle_d+0.3;
         hull() {
             translate([-d + outer_hpx, 0, z_bolt_wall+xy_bolt_thk])
             cylinder(h=2*z_bolt_gap, d = handle_cut_d);
@@ -582,7 +596,7 @@ module all_handles(){
 // thread for handles
 module thread(delta=0, $fa=5, $fs=0.6){
     th_d_out = handle_d - 0.3 + delta;
-    th_d_in = (handle_d - 0.3 + delta)*0.7;
+    th_d_in = (handle_d - 0.3)*0.7 + delta;
     th_step = xy_bolt_thk/2.5;
     th_len = xy_bolt_thk;
     intersection(){
