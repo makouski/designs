@@ -31,7 +31,7 @@ handle_d = 0.85*sin(60)*d/2;
 //lid_cover();
 //all_handles();
 //body_bottom_cover();
-//body();
+body();
 //////////////////////////////////////////////////////////////////
 
 
@@ -428,7 +428,7 @@ module y_dummy_out(extra=0){
 }
 module z_dummy_out(extra=0){
     translate([outer_hpx+0.2, -(bolt_w+2*extra)/2, 0.05])
-    cube([d+2*extra, bolt_w+2*extra, z_bolt_thk+extra -0.05]);
+    cube([d + extra, bolt_w + 2*extra, z_bolt_thk+extra - 0.05]);
 }
 
 // helper part for lid attachment, no need to print separately
