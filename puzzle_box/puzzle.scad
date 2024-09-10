@@ -24,14 +24,22 @@ handle_d = 0.85*sin(60)*d/2;
 
 
 // all parts to print ////////////////////////////////////////////
-//x_bolt();
-//y_bolt();
-//z_bolt();
-//lid();
+
+//rotate([0,90,180]) x_bolt();
+//rotate([0,90,180]) y_bolt();
+//rotate([0,90,180]) z_bolt();
+
+//rotate([180,0,0]) lid();
 //lid_cover();
+
 //all_handles();
+
+// printing without supports: two pieces
 //body_bottom_cover();
-body();
+//rotate([180,0,0]) body(bottom_disc_cut_out=true);
+// OR printing with supports: one piece
+//rotate([180,0,0]) body();
+
 //////////////////////////////////////////////////////////////////
 
 
@@ -42,10 +50,9 @@ function translate_p (p, trn) =
     (p=="z_y") ? [(trn.z + cos(60)*trn.y)*a, sin(60)*trn.y*a, 0] :
     [0,0,0];
 
-
-// pin moving along x
+// pin moving along x and +- 60 degrees
 module pin(){
-    linear_extrude(ah, scale=0.1){
+    linear_extrude(ah, scale=0.15){
         intersection(){
             square([2*a, a], center=true);
             
@@ -490,9 +497,9 @@ Rcur = dR/2 + (h_b^2)/(8*dR);
 
 // cutouts for plank gaps
 pc_depth = 0.8;
-pc_width = 0.8;
+pc_width = 0.6;
 
-module body($fa=3){
+module body(bottom_disc_cut_out=false, $fa=3){
     translate([0,0,h_b-(z_bolt_thk+l_wall_thk)])
     body_top();
     
@@ -515,8 +522,10 @@ module body($fa=3){
         }
         
         // cut out for supporting disc (printing upside down)
-        translate([0,0,2])
-        body_bottom_cover(0.15);
+        if (bottom_disc_cut_out) {
+            translate([0,0,2])
+            body_bottom_cover(0.15);
+        }
         
         // cutout for pin for lid orientation in the barrel body
         translate([0,0,h_b-(z_bolt_thk+l_wall_thk)])
@@ -564,19 +573,22 @@ module body($fa=3){
         }
     
     // bottom
-    translate([0,0,2-1.6-0.1])
+    translate([0,0,2-1.6])
     cylinder(h=1.6, d=d_in_b+1.2);
 }
-//body();
+//intersection(){
+//    cube(100);
+//    body(bottom_disc_cut_out=true);
+//}
 
 //translate([0,0,h_b-(z_bolt_thk+l_wall_thk)])
 //lid();
 
 module body_bottom_cover(extra=0, $fa=3){
-    cylinder(h=0.8, d=d_in_b+1.2+extra);
+    cylinder(h=0.8, d=d_in_b+1.6+extra);
 }
 
-//translate([0,0,-5])
+//translate([0,0,-1])
 //body_bottom_cover();
 
 module handle(stem = 0, $fa=5, $fs=0.8){
@@ -596,7 +608,7 @@ module handle(stem = 0, $fa=5, $fs=0.8){
 module all_handles(){
     // handle for z bolt
     translate([0,50,0])
-    handle(stem = 2*l_wall_thk + 0.4);
+    handle(stem = 2*l_wall_thk + 0.5);
     // handle for y bolt
     translate([15,50,0])
     handle(stem = 2*l_wall_thk + xy_bolt_thk + 0.6);
