@@ -45,6 +45,6 @@ To use 3D maze from `maze_def.scad` as a key note that the outermost handle posi
 and innermost position corresponds to `travel_steps` -- the maximum allowed coordinate. 
 When all 3 handles are in the innermost position, the lid can be opened (or closed).
 
-Changing the size of the pin or `travel_steps` alters the dimensions of the deadbolts, hence sise of the box itself.
+Changing the size of the pin or `travel_steps` alters the dimensions of the dead-bolts, hence size of the box itself.
 If only labyrinth is modified (by changing `paths` definition),
-re-printing just 3 deadbolts gives a new puzzle configuration and all other parts can be reused.
+re-printing just 3 dead-bolts gives a new puzzle configuration and all other parts can be reused.
