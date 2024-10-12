@@ -162,7 +162,7 @@ module dummy_arm_right(angle=0){
     
     translate([x_left, 0, z_left])
     rotate([90,0,0])
-    cylinder(h=h+0.1, d=d_j+eps, center=true);
+    cylinder(h=h+eps, d=d_j+eps, center=true);
     
     hull(){
         translate([x_right, 0, z_right])
@@ -375,7 +375,7 @@ module tip() {
             
             translate([0,0,25-0.02])
             intersection(){
-                tip_thread(7.5, -0.1);
+                tip_thread(7.5, -eps);
                 cylinder(h=7.5, d1=18, d2=8);
             }
         }
