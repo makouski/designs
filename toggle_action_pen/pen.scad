@@ -4,6 +4,8 @@ $fn = 60;
 
 // gap to account for print precision
 eps = 0.1;
+// hole in the pen tip
+tip_hole_d = 2.6;
 // crank mechanism parameters
 // arm lengths
 r_arm = 6.6;
@@ -289,16 +291,16 @@ module barrel_extension(){
 
 // pen tip: [ [d_start, d_stop, height], ... ]
 // total z: 25
-pen_tip_outer_a = [[ 4.2,  6,  2], 
+pen_tip_outer_a = [[ 4.2,  6,  2],
                    [ 6,   12, 17],
                    [12,   11,  4],
                    [11,   11,  2],
                    [10.6,  8,  2] // instead of flat end
                   ];
-// 2.7 is pen tip size
-pen_tip_inner_a = [[2.7, 2.7, 4], 
-                   [2.7, 4.3, 1], 
-                   [4.3, 5.7,15],//20
+// tip_hole_d is insert tip size
+pen_tip_inner_a = [[tip_hole_d+eps, tip_hole_d+eps, 4],
+                   [tip_hole_d+eps, 4.3, 1],
+                   [4.3, 5.7,15], //20
                    [5.7, 6.3,13] // some extra
                    ];
 
