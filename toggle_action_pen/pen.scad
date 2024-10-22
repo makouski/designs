@@ -5,7 +5,24 @@ $fn = 60;
 // gap to account for print precision
 eps = 0.1;
 // hole in the pen tip
-tip_hole_d = 2.6;
+tip_hole_d = 2.5;
+
+
+//// all parts for printing with recommended orientation ////
+
+//rotate([180,0,0]) tip();
+
+//barrel();
+
+//translate([2,5,0]) rotate([0,0,180]) arm_right();
+//translate([-2,-5,0]) arm_left();
+
+//rotate([0,90,90]) barrel_extension();
+
+//endc();
+
+/////////////////////////////////////////////////////////////
+
 // crank mechanism parameters
 // arm lengths
 r_arm = 6.6;
@@ -39,27 +56,6 @@ end_x_left = end_x_right - sqrt(l_arm^2 - end_z_right^2);
 echo("travel: ", end_x_left-(d_e/2));
 end_angle = 90 - angle_r + asin((end_x_right-end_x_left)/l_arm);
 echo("end angle: ", end_angle);
-
-
-//// all parts for printing with recommended orientation ////
-
-//rotate([180,0,0])
-//tip();
-
-//barrel();
-
-//translate([2,5,0])
-//rotate([0,0,180])
-//arm_right();
-//translate([-2,-5,0])
-//arm_left();
-
-//rotate([0,90,90])
-//barrel_extension();
-
-//endc();
-
-/////////////////////////////////////////////////
 
 
 module chamfered_cylinder(d=d_e, eps=eps){
