@@ -73,9 +73,9 @@ planetary_axle_d = 7;
 //driving_gear();
 //planetary_gear_1();
 //planetary_gears_2_3();
-//driving_disc_rod();
-//first_disc_rod();
-//reverse_disc_rod();
+//driving_disk_rod();
+//first_disk_rod();
+//reverse_disk_rod();
 ////////////////////////
 
 
@@ -223,7 +223,7 @@ module plain_spoke(){
     cube([flywheel_outer_d/2 - 1, 12, 10]);
 }
 
-module driving_disc_rod(){
+module driving_disk_rod(){
     wheel_rim();
     // main axle
     ax_len = 10 + 2 + gear_thick*3 + 10*2 + 2;
@@ -248,9 +248,9 @@ module driving_disc_rod(){
         cube([(4+eps),20,10]);
     }
 }
-//driving_disc_rod();
+//driving_disk_rod();
 
-module first_disc_rod(){
+module first_disk_rod(){
     wheel_rim();
     // main axle
     ax_len = 10 + 2 + gear_thick*1 + 10;
@@ -276,9 +276,9 @@ module first_disc_rod(){
         cylinder(h=ax_len+gear_thick+0.2, d=main_axle_d+driving_tube_diff+eps);
     }
 }
-//first_disc_rod();
+//first_disk_rod();
 
-module reverse_disc_rod(){
+module reverse_disk_rod(){
     wheel_rim();
     // main axle
     ax_len = 10;
@@ -302,15 +302,15 @@ module reverse_disc_rod(){
         cylinder(h=ax_len+gear_thick+0.2, d=2*gear_mid_r(N1) + tooth_d + eps);
     }
 }
-//reverse_disc_rod();
+//reverse_disk_rod();
 
 
 // check sizes
-//driving_disc_rod();
+//driving_disk_rod();
 //translate([0,0,12])
-//first_disc_rod();
+//first_disk_rod();
 //translate([0,0,24])
-//reverse_disc_rod();
+//reverse_disk_rod();
 //
 //translate([0,0,gear_thick*3 + 10*3 + 2*2])
 //rotate([180,0,0])
