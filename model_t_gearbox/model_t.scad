@@ -1,5 +1,5 @@
-$fa = 2;
-$fs = 0.3;
+$fa = 5;
+$fs = 0.8;
 
 eps = 0.1;
 tooth_d = 3;
@@ -66,6 +66,19 @@ flywheel_outer_d = 2*plan_disp + 2*gear_mid_r(M1) + tooth_d + 1;
 flywheel_hub_d = 25;
 planetary_axle_d = 7;
 
+
+//// all parts to print ////
+//flywheel();
+//clutch();
+//driving_gear();
+//planetary_gear_1();
+//planetary_gears_2_3();
+//driving_disc_rod();
+//first_disc_rod();
+//reverse_disc_rod();
+////////////////////////
+
+
 module gear(n_tooth = 20){
     n_sl = n_tooth * 2;
     gear_edg = tooth_d / 2 / sin(360/n_sl/2);
@@ -79,7 +92,7 @@ module gear(n_tooth = 20){
                     rotate([0,0,i*360/n_sl])
                     if (i % 2 == 0){
                         translate([gear_mid,0,0])
-                        circle(d=tooth_d-eps);
+                        circle(d=tooth_d-eps, $fn=60);
                     }
                 }
             }
@@ -88,7 +101,7 @@ module gear(n_tooth = 20){
                 rotate([0,0,i*360/n_sl])
                 if (i % 2 == 1){
                     translate([gear_mid,0,0])
-                    circle(d=tooth_d+eps);
+                    circle(d=tooth_d+eps, $fn=60);
                 }
             }
         }
@@ -139,7 +152,7 @@ module flywheel(){
 }
 //flywheel();
 
-// not actual clutch, this is where main clutch was
+// not an actual clutch, this is where main clutch was
 module clutch(){
     cylinder(h=gear_thick, r=12);
     translate([0,0,gear_thick-0.1])
