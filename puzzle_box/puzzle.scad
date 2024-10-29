@@ -36,7 +36,7 @@ handle_d = 0.85*sin(60)*d/2;
 
 // printing without supports: two pieces
 //body_bottom_cover();
-//rotate([180,0,0]) body(bottom_disc_cut_out=true);
+//rotate([180,0,0]) body(bottom_disk_cut_out=true);
 // OR printing with supports: one piece
 //rotate([180,0,0]) body();
 
@@ -495,11 +495,13 @@ thk_out_b = 2;
 dR = (d_out_b_cent - d_out_b)/2;
 Rcur = dR/2 + (h_b^2)/(8*dR);
 
+bottom_shift = 2;
+
 // cutouts for plank gaps
 pc_depth = 0.8;
 pc_width = 0.6;
 
-module body(bottom_disc_cut_out=false, $fa=3){
+module body(bottom_disk_cut_out=false, $fa=3){
     translate([0,0,h_b-(z_bolt_thk+l_wall_thk)])
     body_top();
     
@@ -519,11 +521,17 @@ module body(bottom_disc_cut_out=false, $fa=3){
                 translate([0,-h_b/2,0])
                 square([Rcur,h_b]);
             }
+            // supports for the drop-in disk
+            polygon([
+                [d_out_b/2,     -h_b/2 + bottom_shift],
+                [d_out_b/2 - 4, -h_b/2 + bottom_shift],
+                [d_out_b/2,     -h_b/2 + bottom_shift + 4],
+            ]);
         }
         
-        // cut out for supporting disc (printing upside down)
-        if (bottom_disc_cut_out) {
-            translate([0,0,2])
+        // cut out for supporting disk (printing upside down)
+        if (bottom_disk_cut_out) {
+            translate([0,0,bottom_shift])
             body_bottom_cover(0.15);
         }
         
@@ -543,7 +551,7 @@ module body(bottom_disc_cut_out=false, $fa=3){
             }
         }
     }
-    
+
     // rims
     color("green")
         translate([0,0,h_b/2])
@@ -573,19 +581,24 @@ module body(bottom_disc_cut_out=false, $fa=3){
         }
     
     // bottom
-    translate([0,0,2-1.6])
-    cylinder(h=1.6, d=d_in_b+1.2);
+    translate([0,0,bottom_shift-1.6])
+    cylinder(h=1.6, d=d_in_b+1.6);
 }
 //intersection(){
-//    cube(100);
-//    body(bottom_disc_cut_out=true);
+//    cube(150);
+//    body(bottom_disk_cut_out=true);
 //}
+
+intersection(){
+    cylinder(h=10, d=200);
+    body(bottom_disk_cut_out=true);
+}
 
 //translate([0,0,h_b-(z_bolt_thk+l_wall_thk)])
 //lid();
 
 module body_bottom_cover(extra=0, $fa=3){
-    cylinder(h=0.8, d=d_in_b+1.6+extra);
+    cylinder(h=0.8, d=d_in_b+extra);
 }
 
 //translate([0,0,-1])
