@@ -23,8 +23,8 @@ Lid and lid cover need to be glued together.
 Check that bolts are moving easily inside the slots and trim/file them if necessary before gluing the lid cover.
 
 The body of the puzzle box (shaped as a wooden barrel) has to be printed bottom-up.
-There are two ways to print it: with supports enabled (one part) or with a drop-in disc, so that no supports are needed and the bottom is smooth inside.
-Insert a color change command (or just a pause) before the horizontal layer is printed and carefully insert the supporting disc.
+There are two ways to print it: with supports enabled (one part) or with a drop-in disk, so that no supports are needed and the bottom is smooth inside.
+Insert a color change command (or just a pause) before the horizontal layer is printed and carefully insert the supporting disk.
 
 ### Assembling the lid
 
