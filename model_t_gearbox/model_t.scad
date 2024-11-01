@@ -273,7 +273,7 @@ module first_disk_rod(){
             gear(N1);
         }
         translate([0,0,-0.1])
-        cylinder(h=ax_len+gear_thick+0.2, d=main_axle_d+driving_tube_diff+eps);
+        cylinder(h=ax_len+gear_thick+0.2, d=main_axle_d + driving_tube_diff + eps);
     }
 }
 //first_disk_rod();
