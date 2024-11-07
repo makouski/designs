@@ -310,7 +310,7 @@ module lid($fa=3,$fs=0.6) {
             }
             // three radial ridges for lid stability
             ridge_end = (stab_rim_inner_d+0.4)/2;
-            ridge_start = -(bolt_shift-l_wall_thk-0.1);
+            ridge_start = -(bolt_shift-l_wall_thk-0.15);
             rotate([0,0,60])
             translate([ridge_start, -l_wall_thk/2, 0])
             cube([ridge_end - ridge_start, l_wall_thk, z_bolt_thk+l_wall_thk+0.2]);
@@ -396,24 +396,24 @@ module lid_cover() {
         
         // cut out for x bolt
         hull(){
-            x_dummy_in(0.15);
+            x_dummy_in(0.2);
             translate([0,0,z_bolt_thk])
-            x_dummy_in(0.15);
+            x_dummy_in(0.2);
         }
         // cut for z bolt
         rotate([0,0,-120]){
             hull(){
-                z_dummy_in(0.15);
+                z_dummy_in(0.2);
                 translate([0,0,z_bolt_thk])
-                z_dummy_in(0.15);
+                z_dummy_in(0.2);
             }
         }
         // cut for y bolt
         rotate([0,0,120]){
             hull(){
-                y_dummy_in(0.15);
+                y_dummy_in(0.2);
                 translate([0,0,z_bolt_thk])
-                y_dummy_in(0.15);
+                y_dummy_in(0.2);
             }
         }
     }
@@ -588,11 +588,6 @@ module body(bottom_disk_cut_out=false, $fa=3){
 //    cube(150);
 //    body(bottom_disk_cut_out=true);
 //}
-
-intersection(){
-    cylinder(h=10, d=200);
-    body(bottom_disk_cut_out=true);
-}
 
 //translate([0,0,h_b-(z_bolt_thk+l_wall_thk)])
 //lid();
