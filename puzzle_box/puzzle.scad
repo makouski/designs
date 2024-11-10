@@ -436,8 +436,8 @@ module y_dummy_out(extra=0){
     cube([d+extra, bolt_w+2*extra, xy_bolt_thk+extra + 15]);
 }
 module z_dummy_out(extra=0){
-    translate([outer_hpx+0.2, -(bolt_w+2*extra)/2, 0.05])
-    cube([d + extra, bolt_w + 2*extra, z_bolt_thk+extra - 0.05]);
+    translate([outer_hpx+0.2, -(bolt_w+2*extra)/2, 0])
+    cube([d+extra, bolt_w+2*extra, z_bolt_thk+extra]);
 }
 
 // helper part for lid attachment, no need to print separately
