@@ -246,7 +246,7 @@ module final_pos(){
 bolt_shift = lock_in_disp - pin_hl - d;
 
 module z_dummy_in(extra=0){
-    translate([bolt_shift, -(bolt_w+2*extra)/2, -extra])
+    translate([bolt_shift-extra, -(bolt_w+2*extra)/2, -extra])
     cube([bolt_tot_len+extra, bolt_w+2*extra, z_bolt_thk + 2*extra]);
 }
 //z_dummy_in(0.2);
@@ -261,7 +261,7 @@ module y_dummy_in(extra=0){
         pin();
     }
     translate([bolt_shift-extra, -(bolt_w+2*extra)/2, y_disp_z - extra])
-    cube([bolt_tot_len+2*extra, bolt_w+2*extra, xy_bolt_thk+2*extra]);
+    cube([bolt_tot_len+extra, bolt_w+2*extra, xy_bolt_thk+2*extra]);
 }
 
 module x_dummy_in(extra=0){
@@ -275,7 +275,7 @@ module x_dummy_in(extra=0){
     }
     
     translate([bolt_shift-extra, -(bolt_w+2*extra)/2, x_disp_z - extra])
-    cube([bolt_tot_len+2*extra, bolt_w+2*extra, xy_bolt_thk+2*extra]);
+    cube([bolt_tot_len+extra, bolt_w+2*extra, xy_bolt_thk+2*extra]);
 }
 //x_dummy_in(0.4);
 
@@ -284,22 +284,24 @@ outer_hpx = lock_in_disp + path_tot_len + pin_hl;
 // thickness of the walls holding bolts in place
 l_wall_thk = 1.6;
 module lid($fa=3,$fs=0.6) {
+    // support gap (both sides and back)
+    s_g = 0.15;
     difference(){
         union(){
             // big flat lid
             translate([0,0,z_bolt_thk+l_wall_thk])
             cylinder(h=l_wall_thk, r=lock_in_disp+bolt_tot_len+l_wall_thk+0.6);
             // x support
-            translate([bolt_shift, -(bolt_w+0.2)/2, x_disp_z + xy_bolt_thk])
-            cube([bolt_tot_len, bolt_w+0.2, 2*xy_bolt_thk + l_wall_thk + 0.2]);
+            translate([bolt_shift-s_g, -(bolt_w+2*s_g)/2, x_disp_z + xy_bolt_thk])
+            cube([bolt_tot_len+s_g, bolt_w+2*s_g, 2*xy_bolt_thk + l_wall_thk + 0.2]);
             // y support
             rotate([0,0,120])
-            translate([bolt_shift, -(bolt_w+0.2)/2, y_disp_z + xy_bolt_thk])
-            cube([bolt_tot_len, bolt_w+0.2, xy_bolt_thk + l_wall_thk + 0.2]);
+            translate([bolt_shift-s_g, -(bolt_w+2*s_g)/2, y_disp_z + xy_bolt_thk])
+            cube([bolt_tot_len+s_g, bolt_w+2*s_g, xy_bolt_thk + l_wall_thk + 0.2]);
             // z support
             rotate([0,0,-120])
-            translate([bolt_shift, -(bolt_w+0.2)/2, z_bolt_thk])
-            cube([bolt_tot_len, bolt_w+0.2, l_wall_thk]);
+            translate([bolt_shift-s_g, -(bolt_w+2*s_g)/2, z_bolt_thk])
+            cube([bolt_tot_len+s_g, bolt_w+2*s_g, l_wall_thk]);
             // stability rim
             stab_rim_outer_d = d_in_b-3-0.4;
             stab_rim_inner_d = d_in_b-3-0.4-2*l_wall_thk;
@@ -310,7 +312,7 @@ module lid($fa=3,$fs=0.6) {
             }
             // three radial ridges for lid stability
             ridge_end = (stab_rim_inner_d+0.4)/2;
-            ridge_start = -(bolt_shift-l_wall_thk-0.15);
+            ridge_start = -(bolt_shift-l_wall_thk-0.1);
             rotate([0,0,60])
             translate([ridge_start, -l_wall_thk/2, 0])
             cube([ridge_end - ridge_start, l_wall_thk, z_bolt_thk+l_wall_thk+0.2]);
@@ -334,7 +336,7 @@ module lid($fa=3,$fs=0.6) {
         
         
         // cut out for x bolt
-        x_dummy_in(0.1);
+        x_dummy_in(s_g);
         // cut for handle
         handle_cut_d = handle_d+0.3;
         hull() {
@@ -347,7 +349,7 @@ module lid($fa=3,$fs=0.6) {
         
         // cut for z bolt
         rotate([0,0,-120]){
-            z_dummy_in(0.1);
+            z_dummy_in(s_g);
             // cut for handle
             hull() {
                 translate([-d + outer_hpx, 0, z_bolt_gap])
@@ -360,7 +362,7 @@ module lid($fa=3,$fs=0.6) {
         
         // cut for y bolt
         rotate([0,0,120]){
-            y_dummy_in(0.1);
+            y_dummy_in(s_g);
             // cut for handle
             hull() {
                 translate([-d + outer_hpx, 0, z_bolt_wall+2*xy_bolt_thk])
@@ -379,46 +381,46 @@ module lid($fa=3,$fs=0.6) {
 
 // lid cover to print separately and glue to the bottom of the lid
 module lid_cover() {
+    // lid gap
+    l_g = 0.2;
     difference(){
         union(){
             // x support
-            translate([-l_wall_thk,0,0])
             z_dummy_in(l_wall_thk);
             // y support
             rotate([0,0,120])
-            translate([-l_wall_thk,0,0])
             z_dummy_in(l_wall_thk);
             // z support
             rotate([0,0,-120])
-            translate([-l_wall_thk,0,0])
             z_dummy_in(l_wall_thk);
         }
         
         // cut out for x bolt
         hull(){
-            x_dummy_in(0.2);
+            x_dummy_in(l_g);
             translate([0,0,z_bolt_thk])
-            x_dummy_in(0.2);
+            x_dummy_in(l_g);
         }
         // cut for z bolt
         rotate([0,0,-120]){
+            translate([0.001,0,0])
             hull(){
-                z_dummy_in(0.2);
+                z_dummy_in(l_g);
                 translate([0,0,z_bolt_thk])
-                z_dummy_in(0.2);
+                z_dummy_in(l_g);
             }
         }
         // cut for y bolt
         rotate([0,0,120]){
             hull(){
-                y_dummy_in(0.2);
+                y_dummy_in(l_g);
                 translate([0,0,z_bolt_thk])
-                y_dummy_in(0.2);
+                y_dummy_in(l_g);
             }
         }
     }
 }
-//translate([0,0,-0.3])
+//translate([0,0,-3])
 //lid_cover();
 
 // inner diameter, calculated from lid size
