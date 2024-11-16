@@ -279,10 +279,41 @@ module x_dummy_in(extra=0){
 }
 //x_dummy_in(0.4);
 
-// x position for outer hole
-outer_hpx = lock_in_disp + path_tot_len + pin_hl;
+
+// inner diameter, calculated from lid size
+d_in_b = 2*(lock_in_disp+bolt_tot_len) + 0.3;
+
 // thickness of the walls holding bolts in place
 l_wall_thk = 1.6;
+
+// stability rim
+stab_rim_outer_d = d_in_b-3-0.4;
+stab_rim_inner_d = d_in_b-3-0.4-2*l_wall_thk;
+
+ridge_end = (stab_rim_inner_d+0.4)/2;
+ridge_start = -(bolt_shift-l_wall_thk-0.1);
+module radial_ridge() {
+    translate([ridge_start, -l_wall_thk/2, 0]){
+        cube([ridge_end - ridge_start, l_wall_thk, z_bolt_thk+l_wall_thk+0.2]);
+        translate([0, 0, -l_wall_thk])
+        cube([4, l_wall_thk, l_wall_thk]);
+    }
+}
+
+// hook in the lid cover to grab the tip of the radial ridge
+module ridge_hook(){
+    difference(){
+        translate([-ridge_start-(4+l_wall_thk), -3*l_wall_thk/2, -l_wall_thk])
+        cube([4+l_wall_thk+0.2, 3*l_wall_thk, l_wall_thk-0.2]);
+
+        translate([-ridge_start-(4+0.1), -(l_wall_thk+0.2)/2, -l_wall_thk-0.1])
+        cube([4+0.2, l_wall_thk+0.2, l_wall_thk]);
+    }
+}
+
+// x position for outer hole
+outer_hpx = lock_in_disp + path_tot_len + pin_hl;
+
 module lid($fa=3,$fs=0.6) {
     // support gap (both sides and back)
     s_g = 0.15;
@@ -302,26 +333,22 @@ module lid($fa=3,$fs=0.6) {
             rotate([0,0,-120])
             translate([bolt_shift-s_g, -(bolt_w+2*s_g)/2, z_bolt_thk])
             cube([bolt_tot_len+s_g, bolt_w+2*s_g, l_wall_thk]);
-            // stability rim
-            stab_rim_outer_d = d_in_b-3-0.4;
-            stab_rim_inner_d = d_in_b-3-0.4-2*l_wall_thk;
+            // lid stability rim
             difference() {
                 cylinder(h=z_bolt_thk+l_wall_thk, d=stab_rim_outer_d);
-                translate([0,0,-0.1])
-                cylinder(h=z_bolt_thk+l_wall_thk+0.2, d=stab_rim_inner_d);
+                // gradual transition
+                translate([0,0,-3])
+                cylinder(h=z_bolt_thk+l_wall_thk+0.02, d=stab_rim_inner_d);
+                translate([0,0,z_bolt_thk+l_wall_thk-3+0.01])
+                cylinder(h=3, d1=stab_rim_inner_d, d2=stab_rim_inner_d-6);
             }
             // three radial ridges for lid stability
-            ridge_end = (stab_rim_inner_d+0.4)/2;
-            ridge_start = -(bolt_shift-l_wall_thk-0.1);
             rotate([0,0,60])
-            translate([ridge_start, -l_wall_thk/2, 0])
-            cube([ridge_end - ridge_start, l_wall_thk, z_bolt_thk+l_wall_thk+0.2]);
+            radial_ridge();
             rotate([0,0,-60])
-            translate([ridge_start, -l_wall_thk/2, 0])
-            cube([ridge_end - ridge_start, l_wall_thk, z_bolt_thk+l_wall_thk+0.2]);
+            radial_ridge();
             rotate([0,0,180])
-            translate([ridge_start, -l_wall_thk/2, 0])
-            cube([ridge_end - ridge_start, l_wall_thk, z_bolt_thk+l_wall_thk+0.2]);
+            radial_ridge();
         }
         
         // cut outs in the stability rim
@@ -387,12 +414,17 @@ module lid_cover() {
         union(){
             // x support
             z_dummy_in(l_wall_thk);
+            ridge_hook();
             // y support
-            rotate([0,0,120])
-            z_dummy_in(l_wall_thk);
+            rotate([0,0,120]){
+                z_dummy_in(l_wall_thk);
+                ridge_hook();
+            }
             // z support
-            rotate([0,0,-120])
-            z_dummy_in(l_wall_thk);
+            rotate([0,0,-120]){
+                z_dummy_in(l_wall_thk);
+                ridge_hook();
+            }
         }
         
         // cut out for x bolt
@@ -423,8 +455,6 @@ module lid_cover() {
 //translate([0,0,-3])
 //lid_cover();
 
-// inner diameter, calculated from lid size
-d_in_b = 2*(lock_in_disp+bolt_tot_len) + 0.3;
 
 module x_dummy_out(extra=0){
     // extended to the bottom to cut out bottom wall
@@ -483,6 +513,10 @@ module body_top($fa=3,$fs=0.6) {
         cylinder(h=2*z_bolt_gap, d = handle_d+0.2);
         translate([outer_hpx+0.2, 0, z_bolt_wall+xy_bolt_thk])
         cylinder(h=2*z_bolt_gap, d = handle_d+0.2);
+
+        // trim sharp corners
+        translate([0,0,-0.1])
+        cylinder(h=4, r1=outer_hpx+4, r2=outer_hpx);
     }
 }
 //body_top();
