@@ -141,7 +141,8 @@ module x_bolt(){
         
         x_cutout();
         
-        translate([path_tot_len+pin_hl, 0, 0.05])
+        translate([path_tot_len+pin_hl, 0, xy_bolt_thk+0.05])
+        rotate([180,0,0])
         thread(delta=0.1);
         
         // mark to distinguish x from y
@@ -161,7 +162,8 @@ module y_bolt(){
         
         y_cutout();
         
-        translate([path_tot_len+pin_hl, 0, 0.05])
+        translate([path_tot_len+pin_hl, 0, xy_bolt_thk+0.05])
+        rotate([180,0,0])
         thread(delta=0.1);
     }
 }
@@ -201,7 +203,8 @@ module z_bolt(){
         z_top_cutout();
         
         // subtract thread
-        translate([path_tot_len+pin_hl, 0, z_bolt_wall + z_bolt_gap + 0.05])
+        translate([path_tot_len+pin_hl, 0, z_bolt_wall + z_bolt_gap + xy_bolt_thk +0.05])
+        rotate([180,0,0])
         thread(delta=0.1);
     }
 }
@@ -641,9 +644,9 @@ module handle(stem = 0, $fa=5, $fs=0.8){
     cylinder(h=2*l_wall_thk, d=2*handle_d);
 
     translate([0,0,3*l_wall_thk-0.02])
-    cylinder(h=stem, d = handle_d - 0.2);
+    cylinder(h=stem+0.05, d = handle_d - 0.2);
 
-    translate([0,0,stem + 3*l_wall_thk - 0.2])
+    translate([0,0,stem + 3*l_wall_thk])
     intersection(){
         thread(-0.2);
         cylinder(h=1.6*(xy_bolt_thk), d1=2*handle_d, d2=0);
@@ -664,10 +667,10 @@ module all_handles(){
 
 // thread for handles
 module thread(delta=0, $fa=5, $fs=0.6){
-    th_d_out = handle_d - 0.3 + delta;
-    th_d_in = (handle_d - 0.3)*0.7 + delta;
+    th_d_out = handle_d + delta;
+    th_d_in = handle_d*0.7 + delta;
     th_step = 1.8;
-    th_len = xy_bolt_thk;
+    th_len = xy_bolt_thk+delta;
     intersection(){
         linear_extrude(th_len, twist=-360*th_len/th_step){
             intersection(){
@@ -679,5 +682,6 @@ module thread(delta=0, $fa=5, $fs=0.6){
         }
     }
     cylinder(h=th_len, d=th_d_in);
+    cylinder(h=th_d_out/2, d1=th_d_out, d2=0.4);
 }
 //thread(delta=-0.1);
