@@ -25,9 +25,9 @@ handle_d = 0.85*sin(60)*d/2;
 
 // all parts to print ////////////////////////////////////////////
 
-//rotate([0,90,180]) x_bolt();
-//rotate([0,90,180]) y_bolt();
-//rotate([0,90,180]) z_bolt();
+//translate([-15,0,0]) rotate([0,90,180]) x_bolt();
+//translate([1,0,0]) rotate([0,90,180]) y_bolt();
+//translate([26,0,0]) rotate([0,90,180]) z_bolt();
 
 //rotate([180,0,0]) lid();
 //lid_cover();
