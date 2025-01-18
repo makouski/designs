@@ -5,13 +5,13 @@ lead_d = 2;
 lead_l = 130;
 
 // external parameters
-r_in = 4.5;
-r_out = 6;
-r_cut = 14;
+r_in = 5.5;
+r_out = 7;
+r_cut = 16;
 
 inner_nut_len = 8;
 inner_ext_len = 4;
-back_ins_len = 4;
+back_ins_len = 5;
 
 len_tot = lead_l + inner_nut_len + back_ins_len;
 
@@ -110,8 +110,8 @@ module main_thread(height=10, delta=0){
 //main_thread(height=len_tot, delta=0.1);
 
 // inner nut
-cut_cyl_r = 0.8*(th_min_d-0.1)/2;
-cut_guide_th = 1.1;
+cut_cyl_r = 0.6*(th_min_d-0.1)/2;
+cut_guide_th = 1.6;
 
 module inner_nut_cut(delta=0){
     translate([cut_cyl_r+th_min_d/2 - cut_guide_th, 0, -0.1])
@@ -133,17 +133,17 @@ module inner_nut(){
         inner_nut_cut(0.1);
         
         // bottom slot for screwdriver
-        translate([-0.5,0,0])
+        translate([-0.3,0,0])
         cube([4, 0.8, 2], center=true);
     }
     
     translate([0,0,inner_nut_len-0.05])
     difference(){
-        cylinder(h=inner_ext_len, d1=th_min_d - 2*cut_guide_th - 0.3, d2=lead_d+0.9);
+        cylinder(h=inner_ext_len+0.8, d1=th_min_d - 2*cut_guide_th - 0.3, d2=lead_d+0.9);
         
         // hole to hold the lead
         translate([0,0,1.1])
-        cylinder(h=inner_ext_len-1, d1=lead_d-0.2, d2=lead_d+0.2);
+        cylinder(h=inner_ext_len+0.8-1, d1=lead_d-0.2, d2=lead_d+0.4);
     }
 }
 //inner_nut();
@@ -169,7 +169,7 @@ module g_sec(delta=0.0){
 }
 //g_sec();
 
-module inner_g_latch(delta=0) {
+module inner_g_latch(delta=0){
     l_h_b = (th_max_d-th_min_d)/2 + 0.8;
     cylinder(h=l_h_b+0.02, d1=th_min_d + delta, d2=th_max_d+0.8*2 + delta);
     translate([0,0,l_h_b])
@@ -185,7 +185,7 @@ module inner_guide(){
         cylinder(h=1, d=th_min_d - 2*cut_guide_th);
     }
     
-    difference() {
+    difference(){
         union(){
             // long guide bars
             linear_extrude(len_tot, twist=0)
@@ -203,13 +203,27 @@ module inner_guide(){
         translate([0,0,lead_l + inner_nut_len + 0.6])
         back_nut_thread(back_ins_len+0.1, delta=0);
     }
+    
+    // stabilizing rings
+    for(z = [25 : 25 : lead_l+inner_nut_len]){
+        translate([0,0,z])
+        rotate_extrude(){
+        translate([(th_min_d-0.1)/2 - 0.5,0,0])
+        square([0.5,0.2]);
+        }
+    }
 }
 //inner_guide();
 
+// back nut thread parameters
+bn_th_min_d = th_min_d - 2*cut_guide_th;
+bn_th_max_d = bn_th_min_d + 1.5;
+bn_th_step = 1.6;
+
 module back_nut_thread(height=10, delta=0){
-    min_d = th_min_d - 2*cut_guide_th;
-    max_d = min_d + 0.9;
-    step = 1.2;
+    min_d = bn_th_min_d;
+    max_d = bn_th_max_d;
+    step = bn_th_step;
     
     cylinder(h=height, d = min_d+delta, $fn=360/$fa);
     
@@ -222,7 +236,7 @@ module back_nut_thread(height=10, delta=0){
 }
 //back_nut_thread(10, -0.1);
 
-module main_body() {
+module main_body(with_thread=true){
     difference(){
         union(){
             intersection(){
@@ -235,11 +249,13 @@ module main_body() {
             translate([r_out-(back_ins_len/2),0,0])
             circle(r=back_ins_len/2);
         }
-        
-        translate([0,0,-0.05])
-        intersection(){
-            main_thread(height=len_tot+0.1, delta=0.1);
-            cylinder(h=len_tot+1, r1=th_min_d/2, r2=len_tot);
+        // thread makes rendering very slow, parametrize for testing
+        if (with_thread) {
+            translate([0,0,-0.05])
+            intersection(){
+                main_thread(height=len_tot+0.1, delta=0.1);
+                cylinder(h=len_tot+1, r1=th_min_d/2, r2=len_tot);
+            }
         }
         
         // latch cut out
@@ -257,13 +273,13 @@ module main_body() {
             cylinder(h=inner_ext_len+2+0.02, d1=lead_d+0.8, d2=r_in*2);
             
             translate([0,0,-0.1])
-            cylinder(h=2.2, d=lead_d+0.1);
+            cylinder(h=2.2, d=lead_d+0.3);
             
             translate([0,0,2])
-            cylinder(h=inner_ext_len+0.05, d1=lead_d+1, d2=th_min_d+0.2);
+            cylinder(h=inner_ext_len+0.05, d1=lead_d+1.2, d2=th_min_d+0.2);
             
             translate([0,0,1.6])
-            cylinder(h=0.41, d1=lead_d+0.1, d2=lead_d+1);
+            cylinder(h=0.41, d1=lead_d+0.3, d2=lead_d+1.2);
         }
     }
 }
@@ -276,3 +292,47 @@ module main_body() {
 //    translate([0,0,-20])
 //    cube(200);
 //}
+
+
+r_top = r_out;
+r_bot = bn_th_max_d/2 + 0.8;
+r_b = r_out * 1.1;
+h_top = sqrt(r_b^2 - r_top^2);
+h_bot = sqrt(r_b^2 - r_bot^2);
+
+module twist_ball(){ 
+    intersection(){
+        translate([0,0,-h_top])
+        sphere(r);
+        
+        translate([0,0,-(h_top+h_bot)])
+        cylinder(h=h_top+h_bot, r=r_b+1);
+    }
+}
+
+module knob(){
+    guide_back_depth = back_ins_len - ((th_max_d-th_min_d)/2 + 0.8 +1);
+    
+    difference(){
+        union(){
+            cylinder(h=guide_back_depth, d=th_max_d+0.8*2 -0.1);
+            twist_ball();
+        }
+        
+        translate([0,0,-0.2])
+        linear_extrude(guide_back_depth+0.3, twist=0)
+        g_sec(0.1);
+        
+        translate([0,0,-2*r_out])
+        cylinder(h=3*r_out, d=bn_th_max_d+0.1);
+    }
+}
+//knob();
+
+module top_screw(){
+    top_thk = 1.6;
+    h = top_thk + (h_top+h_bot) + back_ins_len - 1;
+    back_nut_thread(height=h, delta=-0.1);
+    cylinder(h=top_thk, r=r_bot);
+}
+//top_screw();
