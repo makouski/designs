@@ -315,7 +315,7 @@ module knob(){
     
     difference(){
         union(){
-            cylinder(h=guide_back_depth, d=th_max_d+0.8*2 - 0.1);
+            cylinder(h=guide_back_depth, d=th_max_d - 0.1);
             twist_ball();
         }
         
@@ -326,7 +326,7 @@ module knob(){
         cylinder(h=3*r_out, d=bn_th_max_d+0.1);
     }
 }
-//knob();
+knob();
 
 module top_screw(){
     top_thk = 1.6;
