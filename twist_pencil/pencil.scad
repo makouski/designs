@@ -303,7 +303,7 @@ h_bot = sqrt(r_b^2 - r_bot^2);
 module twist_ball(){ 
     intersection(){
         translate([0,0,-h_top])
-        sphere(r);
+        sphere(r_b);
         
         translate([0,0,-(h_top+h_bot)])
         cylinder(h=h_top+h_bot, r=r_b+1);
@@ -315,11 +315,10 @@ module knob(){
     
     difference(){
         union(){
-            cylinder(h=guide_back_depth, d=th_max_d+0.8*2 -0.1);
+            cylinder(h=guide_back_depth, d=th_max_d+0.8*2 - 0.1);
             twist_ball();
         }
         
-        translate([0,0,-0.2])
         linear_extrude(guide_back_depth+0.3, twist=0)
         g_sec(0.1);
         
