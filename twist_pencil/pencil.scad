@@ -38,7 +38,7 @@ module sec(scale=1.0, turn=0.0) {
 
 //sec();
 
-function twist(a) = 30 * sin(-a*3/4);
+function twist(a) = 35 * sin(-a*3/4);
 
 s_tran = 0.5;
 x1 = acos(-s_tran);
@@ -110,20 +110,17 @@ module main_thread(height=10, delta=0){
 //main_thread(height=len_tot, delta=0.1);
 
 // inner nut
-cut_cyl_r = 0.6*(th_min_d-0.1)/2;
+cut_width = 0.8 * th_min_d/2;
 cut_guide_th = 1.6;
 
 module inner_nut_cut(delta=0){
-    translate([cut_cyl_r+th_min_d/2 - cut_guide_th, 0, -0.1])
-    cylinder(h=inner_nut_len+0.2, r=cut_cyl_r + delta/2);
-    
-    rotate([0,0,120])
-    translate([cut_cyl_r+th_min_d/2 - cut_guide_th, 0, -0.1])
-    cylinder(h=inner_nut_len+0.2, r=cut_cyl_r + delta/2);
-    
-    rotate([0,0,-120])
-    translate([cut_cyl_r+th_min_d/2 - cut_guide_th, 0, -0.1])
-    cylinder(h=inner_nut_len+0.2, r=cut_cyl_r + delta/2);
+    difference(){
+        translate([-th_max_d, -(cut_width + 2*delta)/2, -0.1])
+        cube([th_max_d*2, cut_width + 2*delta, inner_nut_len+0.2]);
+        
+        translate([0,0,-0.5])
+        cylinder(h=inner_nut_len+1, r=th_min_d/2 - cut_guide_th - delta);
+    }
 }
 
 module inner_nut(){
@@ -133,17 +130,16 @@ module inner_nut(){
         inner_nut_cut(0.1);
         
         // bottom slot for screwdriver
-        translate([-0.3,0,0])
-        cube([4, 0.8, 2], center=true);
+        cube([0.8, 4.5, 3.2], center=true);
     }
     
     translate([0,0,inner_nut_len-0.05])
     difference(){
-        cylinder(h=inner_ext_len+0.8, d1=th_min_d - 2*cut_guide_th - 0.3, d2=lead_d+0.9);
+        cylinder(h=inner_ext_len+1, d1=th_min_d - 2*cut_guide_th - 0.3, d2=lead_d+0.9);
         
         // hole to hold the lead
         translate([0,0,1.1])
-        cylinder(h=inner_ext_len+0.8-1, d1=lead_d-0.2, d2=lead_d+0.4);
+        cylinder(h=inner_ext_len, d1=lead_d-0.1, d2=lead_d+0.5);
     }
 }
 //inner_nut();
@@ -153,17 +149,11 @@ module g_sec(delta=0.0){
     intersection(){
         circle(d=th_min_d+delta);
         
-        union(){
-        translate([cut_cyl_r+th_min_d/2 - cut_guide_th, 0, 0])
-        circle(d=2*cut_cyl_r+delta);
-
-        rotate([0,0,120])
-        translate([cut_cyl_r+th_min_d/2 - cut_guide_th, 0, 0])
-        circle(d=2*cut_cyl_r+delta);
-
-        rotate([0,0,-120])
-        translate([cut_cyl_r+th_min_d/2 - cut_guide_th, 0, 0])
-        circle(d=2*cut_cyl_r+delta);
+        difference(){
+            translate([-th_max_d, -(cut_width + 2*delta)/2, 0])
+            square([th_max_d*2, cut_width + 2*delta]);
+            
+            circle(r=th_min_d/2 - cut_guide_th - delta);
         }
     }
 }
@@ -179,10 +169,13 @@ module inner_g_latch(delta=0){
 module inner_guide(){
     // stabilizing ring
     difference(){
-        cylinder(h=0.8, d=th_min_d-0.1);
+        cylinder(h=1, d=th_min_d-0.1);
         
         translate([0,0,-0.1])
-        cylinder(h=1, d=th_min_d - 2*cut_guide_th);
+        cylinder(h=2, d=th_min_d - 2*cut_guide_th);
+        
+        translate([-(th_min_d+1)/2, cut_width/2 - 0.1, -0.2])
+        cube([th_min_d+1, th_min_d+1, 2]);
     }
     
     difference(){
@@ -203,21 +196,12 @@ module inner_guide(){
         translate([0,0,lead_l + inner_nut_len + 0.6])
         back_nut_thread(back_ins_len+0.1, delta=0);
     }
-    
-    // stabilizing rings
-    for(z = [25 : 25 : lead_l+inner_nut_len]){
-        translate([0,0,z])
-        rotate_extrude(){
-        translate([(th_min_d-0.1)/2 - 0.5,0,0])
-        square([0.5,0.2]);
-        }
-    }
 }
 //inner_guide();
 
 // back nut thread parameters
 bn_th_min_d = th_min_d - 2*cut_guide_th;
-bn_th_max_d = bn_th_min_d + 1.5;
+bn_th_max_d = bn_th_min_d + 1.4;
 bn_th_step = 1.6;
 
 module back_nut_thread(height=10, delta=0){
@@ -295,8 +279,8 @@ module main_body(with_thread=true){
 
 
 r_top = r_out;
-r_bot = bn_th_max_d/2 + 0.8;
-r_b = r_out * 1.1;
+r_bot = bn_th_max_d/2 + 1.6;
+r_b = r_out * 1.2;
 h_top = sqrt(r_b^2 - r_top^2);
 h_bot = sqrt(r_b^2 - r_bot^2);
 
@@ -326,12 +310,12 @@ module knob(){
         cylinder(h=3*r_out, d=bn_th_max_d+0.1);
     }
 }
-knob();
+//knob();
 
 module top_screw(){
     top_thk = 1.6;
     h = top_thk + (h_top+h_bot) + back_ins_len - 1;
     back_nut_thread(height=h, delta=-0.1);
-    cylinder(h=top_thk, r=r_bot);
+    cylinder(h=top_thk, r1=r_bot-1, r2=r_bot);
 }
 //top_screw();
