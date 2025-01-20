@@ -13,7 +13,7 @@ inner_nut_len = 8;
 inner_ext_len = 4;
 back_ins_len = 5;
 
-len_tot = lead_l + inner_nut_len + back_ins_len;
+len_tot = lead_l + inner_nut_len + back_ins_len - (inner_ext_len + 4);
 
 
 // 2D cross section
@@ -139,7 +139,7 @@ module inner_nut(){
         
         // hole to hold the lead
         translate([0,0,1.1])
-        cylinder(h=inner_ext_len, d1=lead_d-0.1, d2=lead_d+0.5);
+        cylinder(h=inner_ext_len, d1=lead_d-0.3, d2=lead_d+0.3);
     }
 }
 //inner_nut();
@@ -257,7 +257,7 @@ module main_body(with_thread=true){
             cylinder(h=inner_ext_len+2+0.02, d1=lead_d+0.8, d2=r_in*2);
             
             translate([0,0,-0.1])
-            cylinder(h=2.2, d=lead_d+0.3);
+            cylinder(h=2.2, d=lead_d+0.2);
             
             translate([0,0,2])
             cylinder(h=inner_ext_len+0.05, d1=lead_d+1.2, d2=th_min_d+0.2);
