@@ -13,6 +13,17 @@ inner_thread_len = 20;
 
 len_tot = lead_l + inner_thread_len/2;
 
+//// all parts with preferred orientation ////
+
+//rotate([180,0,0]) main_body();
+
+//translate([0,0,0]) rotate([0,90,0]) rotate([0,0,30]) inner_clamp_slice(n=0);
+//translate([0,10,0]) rotate([0,90,0]) rotate([0,0,30]) inner_clamp_slice(n=1);
+//translate([0,20,0]) rotate([0,90,0]) rotate([0,0,30]) inner_clamp_slice(n=2);
+
+//rotate([180,0,0]) top_knob();
+
+//////////////////////////////////////////////
 
 // 2D cross section
 module sec(scale=1.0, turn=0.0) {
@@ -180,7 +191,7 @@ module inner_clamp(n=0){
         
         // bigger hole, full length
         translate([0,0,inner_thread_len/2 - 5.3])
-        cylinder(h=lead_l-inner_thread_len/2, d=lead_d+0.6);
+        cylinder(h=lead_l-inner_thread_len/2, d=lead_d+0.4);
     }
 }
 //inner_clamp(n=0);
