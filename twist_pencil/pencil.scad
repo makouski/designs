@@ -17,7 +17,7 @@ len_tot = lead_l + inner_thread_len/2;
 
 //rotate([180,0,0]) main_body();
 
-//translate([0,0,0]) rotate([0,90,0]) rotate([0,0,30]) inner_clamp_slice(n=0);
+//translate([0, 0,0]) rotate([0,90,0]) rotate([0,0,30]) inner_clamp_slice(n=0);
 //translate([0,10,0]) rotate([0,90,0]) rotate([0,0,30]) inner_clamp_slice(n=1);
 //translate([0,20,0]) rotate([0,90,0]) rotate([0,0,30]) inner_clamp_slice(n=2);
 
@@ -187,10 +187,10 @@ module inner_clamp(n=0){
         
         // smaller hole
         translate([0,0,-5.1])
-        cylinder(h=inner_thread_len/2, d=lead_d-0.1);
+        cylinder(h=inner_thread_len, d=lead_d-0.1);
         
         // bigger hole, full length
-        translate([0,0,inner_thread_len/2 - 5.3])
+        translate([0,0,inner_thread_len - 5.3])
         cylinder(h=lead_l-inner_thread_len/2, d=lead_d+0.4);
     }
 }
@@ -216,7 +216,7 @@ module inner_clamp_slice(n=0){
         
         // extra room to close tighter
         translate([-r_out,0,-6])
-        cube([r_out, 0.4, lead_l-5]);
+        cube([r_out, 0.4, lead_l +6]);
     }
 }
 //inner_clamp_slice(n=0);
