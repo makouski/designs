@@ -6,7 +6,7 @@ lead_l = 130;
 
 // external shape parameters
 r_in = 4.5;
-r_out = 6;
+r_out = 5.6;
 r_cut = 14;
 
 inner_thread_len = 20;
@@ -53,7 +53,7 @@ s_tran = 0.5;
 x1 = acos(-s_tran);
 y1 = sin(x1);
 echo("x1",x1);
-function scale(a) = 1.0 + 0.4*( (a < x1) ? sin(a) : y1*exp(-PI/180*s_tran/y1*(a-x1)) );
+function scale(a) = 1.0 + 0.3*( (a < x1) ? sin(a) : y1*exp(-PI/180*s_tran/y1*(a-x1)) );
 
 // parameters of recursive loop
 max_phase = 360;
@@ -222,7 +222,7 @@ module inner_clamp_slice(n=0){
 //inner_clamp_slice(n=0);
 
 r_top = r_out;
-r_b = r_out * 1.25;
+r_b = r_out * 1.3;
 h_top = sqrt(r_b^2 - r_top^2);
 
 module twist_ball(){ 
