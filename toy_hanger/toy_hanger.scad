@@ -1,21 +1,24 @@
 $fa = 5;
-$fs = 1;
+$fs = 0.5;
 
 // joints
 d_out = 18;
 d_in = 10;
-// beam segment
+// beam segment:
 l_seg = 200;
+// width scale
 th = 7;
+// wall thickness scale
 wall = 2;
 // number of inner segments for cross beams
 n_seg=6;
 
-// minimum table top thickness
+// minimum and maximum table top thickness
 table_top_min_th = 18;
+table_top_max_th = 30;
 // how deep the clamp can go under the table
 table_top_depth = 15;
-// clamp length
+// clamp length on top of the table
 clamp_ext_len = 45;
 
 // bigger joint for clamp
@@ -117,54 +120,29 @@ module end_arm(){
 }
 //end_arm();
 
-
-
-slide_w = th*4;
-// add a little extra height
-slide_h = table_top_min_th + th;
-module slider_comb(delta=0){
-    // parameters for 2d "comb"
-    depth = wall + delta;
-    w = 1.6 + delta;
-    p = 1.6*2 + 0.4;
-    depth_t = 0.2;
-    side_t = 0.3;
-    
-    translate([0,0,slide_h])
-    rotate([0,90,0])
-    intersection(){
-    cube([slide_h, depth, slide_w]);
-    
-    multmatrix([
-        [1, 0, -side_t, 0],
-        [0, 1, 0,      0],
-        [0, 0, 1,      0],
-    ])
-    linear_extrude(slide_w)
-    for(dx = [0 : p : slide_h + slide_w*side_t])
-    translate([dx, 0, 0])
-    polygon([[0,0], [w,0], [w + depth*depth_t, depth], [depth*depth_t, depth]]);
-    }
-}
-//slider_comb(delta=0);
-
+// clamp slider
+y_len = th*3 + 1;
 module clamp_slider(){
-    slider_comb(delta=0);
-    translate([0,-2*wall,0])
-    cube([slide_w, 2*wall, slide_h]);
+    // cut gaps for each side
+    cut_x_delta = 0.3;
+    cut_y_delta = 0.15;
     
-    hull(){
-        translate([0, -2*wall, -3*wall])
-        cube([slide_w, 2*wall, 3*wall]);
-        
-        translate([0, -2*wall + (3*wall + table_top_depth), -2*wall])
-        cube([slide_w, 2*wall, 2*wall]);
+    difference(){
+        translate([-wall, -(1.5*wall-cut_y_delta), 0])
+        {
+            cube([table_top_depth+2*wall+wall, y_len+3*wall, 2*wall]);
+            // round bump on the far end
+            translate([table_top_depth+2*wall+wall - 0.9*wall, 0, 1.4*wall])
+            rotate([-90, 0, 0])
+            cylinder(h=y_len+3*wall, r=wall*1.15);
+        }
+        rotate([0, 4, 0])
+        cube([2*wall+2*cut_x_delta, y_len+2*cut_y_delta, 5*wall]);
     }
 }
 //clamp_slider();
 
 module clamp(){
-    translate([wall+0.3, 0, 0])
     rotate([-90,0,0])
     translate([d_st/2, -d_st/2, 0]){
         regular_joint(d_st, top=true);
@@ -177,23 +155,12 @@ module clamp(){
         }
     }
     
-    difference(){
-        // parts along table corner
-        union(){
-            x_len = clamp_ext_len + 3*wall;
-            y_len = th*3 + 1;
-            translate([0, 0, -wall*2])
-            cube([x_len, y_len, wall*2]);
-              
-            translate([0, 0, -(2*wall+table_top_min_th)])
-            cube([3*wall, y_len, 2*wall+table_top_min_th]);
-        }
-        // cut out for comb
-        
-        rotate([0, 0, -90])
-        translate([-slide_w+0.02, -0.02, -slide_h+0.02])
-        slider_comb(delta=0.3);
-    }
+    x_len = clamp_ext_len + 3*wall;
+    translate([0, 0, -wall*2])
+    cube([x_len, y_len, wall*2]);
+      
+    translate([0, 0, -(2*wall+table_top_max_th+3*wall)])
+    cube([2*wall, y_len, 2*wall+table_top_max_th+3*wall]);
 }
 //clamp();
 
