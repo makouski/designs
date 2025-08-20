@@ -6,22 +6,21 @@ d_out = 18;
 d_in = 10;
 // beam segment:
 l_seg = 200;
-// width scale
+// width
 th = 7;
-// wall thickness scale
+// wall thickness
 wall = 2;
 // number of inner segments for cross beams
 n_seg=6;
 
-// minimum and maximum table top thickness
-table_top_min_th = 18;
-table_top_max_th = 30;
+// maximum table top thickness
+table_top_max_th = 35;
 // how deep the clamp can go under the table
 table_top_depth = 15;
 // clamp length on top of the table
 clamp_ext_len = 45;
 
-// bigger joint for clamp
+// scale bigger joint for clamp
 d_st = d_out*1.2;
 
 module grip_ext(d_o, top) {
@@ -124,19 +123,19 @@ module end_arm(){
 y_len = th*3 + 1;
 module clamp_slider(){
     // cut gaps for each side
-    cut_x_delta = 0.3;
-    cut_y_delta = 0.15;
+    cut_x_delta = 0.2;
+    cut_y_delta = 0.2;
     
     difference(){
         translate([-wall, -(1.5*wall-cut_y_delta), 0])
         {
             cube([table_top_depth+2*wall+wall, y_len+3*wall, 2*wall]);
             // round bump on the far end
-            translate([table_top_depth+2*wall+wall - 0.9*wall, 0, 1.4*wall])
+            translate([table_top_depth+2*wall+wall - 1.3*wall, 0, 1.6*wall])
             rotate([-90, 0, 0])
-            cylinder(h=y_len+3*wall, r=wall*1.15);
+            cylinder(h=y_len+3*wall, r=wall*1.4);
         }
-        rotate([0, 4, 0])
+        rotate([0, 6, 0])
         cube([2*wall+2*cut_x_delta, y_len+2*cut_y_delta, 5*wall]);
     }
 }
@@ -162,19 +161,23 @@ module clamp(){
     translate([0, 0, -(2*wall+table_top_max_th+3*wall)])
     cube([2*wall, y_len, 2*wall+table_top_max_th+3*wall]);
 }
+//rotate([90,0,0])
 //clamp();
+
+thread_depth = 1.6;
+thread_diff = 0.3;
 
 module bolt(){
     // thread height
     h_t = 3+th*3+1+1;
     intersection(){
         union(){
-            thread(h_t, delta=-0.2);
+            thread(h_t, delta=-thread_diff);
             cylinder(h=3, d=d_out);
         }
         
         translate([0,0,h_t])
-        cube([d_in-1.6-0.2, d_out, h_t*3], center=true);
+        cube([d_in-thread_depth-thread_diff, d_out, h_t*3], center=true);
         
         cylinder(h=h_t, d1=h_t, d2=d_in-2);
     }
@@ -186,7 +189,7 @@ module nut(){
     difference(){
         cylinder(h=th, d=d_out, $fn=7);
         translate([0,0,-0.5])
-        thread(th+1, delta=0.2);
+        thread(th+1, delta=thread_diff);
     }
 }
 //nut();
@@ -225,7 +228,7 @@ module slice_twist(len_tot, pitch, min_d, max_d, s){
 
 module thread(len_tot, delta=0){
     max_d = d_in + delta;
-    min_d = max_d - 1.6;
+    min_d = max_d - thread_depth;
     pitch = 2.4;
     
     // inner cylinder
