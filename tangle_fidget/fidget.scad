@@ -5,7 +5,7 @@ cyl_d = 12;
 cyl_R = 24;
 shave_frac = 0.95;
 seg_arc = 90;
-//seg_arc = 60;
+// seg_arc = 60;
 
 //// to print
 // pin_inner_full();
