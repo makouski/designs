@@ -1,10 +1,10 @@
-$fa=2;
-$fs=0.6;
+$fa=4;
+$fs=0.4;
 
 // ball
 R = 7;
 
-wall = 1;
+wall = 1.2;
 // vertical pipeline
 r1 = R;
 a1 = 65;
@@ -12,11 +12,11 @@ v_shift = 2;
 
 // horizontal pipeline
 x_h_shift = 4*R;
-y_h_shift = 2;
-hseg1_L = 3*R;
-hseg1_a = 45;
-hseg2_L = 1*R;
-hseg2_a = 100;
+y_h_shift = 3;
+hseg1_L = 3.3*R;
+hseg1_a = 40;
+hseg2_L = 1.6*R;
+hseg2_a = 110;
 hseg2_b = 65;
 // curve parameters
 r_h = R;
@@ -37,8 +37,8 @@ z_disp1 = r1*sin(a1);
 z_disp2 = sqrt((2*R)^2 - x_disp^2);
 b1 = atan(x_disp/(z_disp2+v_shift));
 d_ang1 = 180 - 2*b1;
-tvext = 3*R;
-bvext = 0;
+tvext = 2.1*R;
+bvext = 0.3*R;
 bot_z_end =  -(z_disp2+2*v_shift + bvext);
 top_z_end = z_disp1 + tvext;
 right_x_end = R + x_disp/sin(b1);
@@ -47,7 +47,15 @@ back_y_end = R + p3.y;
 
 module ball() {
     delta = 0.5;
-    sphere(r=R - delta/2);
+    new_r = R - delta/2;
+    difference(){
+        sphere(r=new_r);
+        translate([0,0,-new_r])
+        cylinder(h=new_r, r=R);
+        // hole for filament piece
+        translate([0,0,-0.05])
+        cylinder(h=new_r - 1, d=1.9);
+    }
 }
 //ball();
 
@@ -100,23 +108,26 @@ module horiz_cut(vert_drain=false) {
     // seg 1
     rotate([-hseg1_a,0,0])
     cylinder(h=hseg1_L, r=R);
-    
-    // seg 2
+    // seg 2 start
     translate([0,hseg1_L*sin(hseg1_a), hseg1_L*cos(hseg1_a)]) {
         sphere(r=R);
-        rotate([-hseg2_a,0,hseg2_b])
-        cylinder(h=hseg2_L, r=R);
+        cylinder(h=R+0.2, r=R*0.35);
     }
     
-    // seg 3 start
-    translate(p3) sphere(r=R);
-    
     if (vert_drain) {
-        translate(p3)
+        translate([0,hseg1_L*sin(hseg1_a), hseg1_L*cos(hseg1_a)])
         translate([0,0,-(top_z_end - bot_z_end)])
         cylinder(h=top_z_end - bot_z_end, r=R);
     }
     else {
+        // seg 2
+        translate([0,hseg1_L*sin(hseg1_a), hseg1_L*cos(hseg1_a)]) {
+            rotate([-hseg2_a,0,hseg2_b])
+            cylinder(h=hseg2_L, r=R);
+        }
+        
+        // seg 3 start
+        translate(p3) sphere(r=R);
         // connect p3 and p4
         translate(p4)
         rotate([
@@ -143,6 +154,10 @@ module horiz_cut(vert_drain=false) {
 //horiz_cut(vert_drain=true);
 
 module 2x2_cut() {
+    // vertical extension
+    translate([x_disp, 0, top_z_end-0.05])
+    cylinder(h=hseg1_L*cos(hseg1_a) + R + wall - top_z_end + 0.1, r=R);
+    
     main_vert_cut();
     horiz_cut();
     translate([-x_h_shift,y_h_shift,0])
@@ -163,24 +178,27 @@ module 2x2_box() {
     n_v_seg = 1;
     translate([-x_h_shift/2, -(R+wall), -((top_z_end - bot_z_end)*n_v_seg + 2*R + 0.05)])
     cube([
-        x_h_shift/2 + right_x_end,
-        R + 2*wall + back_y_end + y_h_shift*n_h_seg,
-        top_z_end + (top_z_end - bot_z_end)*n_v_seg + 2*R
+        x_h_shift/2 + right_x_end + wall,
+        R + 2*wall + back_y_end + y_h_shift*(n_h_seg-1),
+        hseg1_L*cos(hseg1_a) + R + wall + (top_z_end - bot_z_end)*n_v_seg + 2*R
     ]);
     // side box
     translate([
-        -3*x_h_shift/2,
+        -x_h_shift - x_h_shift/2 - wall,
         -(R+wall) + y_h_shift,
         -((top_z_end - bot_z_end)*n_v_seg + 2*R + 0.05)
     ])
     cube([
-        x_h_shift,
-        R + 2*wall + back_y_end + y_h_shift*(n_h_seg-1),
-        top_z_end + (top_z_end - bot_z_end)*n_v_seg + 2*R
+        x_h_shift + wall,
+        R + 2*wall + back_y_end + y_h_shift*(n_h_seg-2),
+        hseg1_L*cos(hseg1_a) + R + wall + (top_z_end - bot_z_end)*n_v_seg + 2*R
     ]);
 }
 
-difference() {
-    2x2_box();
-    2x2_cut();
+module draft() {
+    difference() {
+        2x2_box();
+        2x2_cut();
+    }
 }
+draft();
