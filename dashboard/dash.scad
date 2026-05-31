@@ -1,4 +1,4 @@
-$fa=4;
+$fa=2;
 $fs=0.4;
 
 // ball
@@ -11,16 +11,16 @@ a1 = 65;
 v_shift = 2;
 
 // horizontal pipeline
-x_h_shift = 4*R;
-y_h_shift = 3;
-hseg1_L = 3.3*R;
+x_h_shift = 3.5*R;
+y_h_shift = 4;
+hseg1_L = 3*R;
 hseg1_a = 40;
-hseg2_L = 1.6*R;
-hseg2_a = 110;
-hseg2_b = 65;
+hseg2_L = 1*R;
+hseg2_a = 90;
+hseg2_b = 50;
 // curve parameters
 r_h = R;
-a_h = 55;
+a_h = 40;
 x_h_disp = r_h*(1-cos(a_h));
 z_h_disp = r_h*sin(a_h);
 
@@ -46,7 +46,7 @@ back_y_end = R + p3.y;
 
 
 module ball() {
-    delta = 0.5;
+    delta = 0.7;
     new_r = R - delta/2;
     difference(){
         sphere(r=new_r);
@@ -54,7 +54,7 @@ module ball() {
         cylinder(h=new_r, r=R);
         // hole for filament piece
         translate([0,0,-0.05])
-        cylinder(h=new_r - 1, d=1.9);
+        cylinder(h=new_r - 1, d=2);
     }
 }
 //ball();
@@ -79,8 +79,12 @@ module window() {
 
 module main_vert_cut() {
     // vertical well
-    translate([x_disp, 0, z_disp1])
-    cylinder(h=tvext, r=R);
+    translate([x_disp, 0, z_disp1]) {
+        cylinder(h=tvext, r=R);
+        // cut for printing
+        translate([0, -0.6*R/2, z_disp2-z_disp1])
+        cube([1.4*R, 0.6*R, R]);
+    }
     
     // curve to the central position
     translate([x_disp, 0, z_disp1])
@@ -94,8 +98,10 @@ module main_vert_cut() {
     arc(x_disp/sin(b1), d_ang1);
     
     // bottom vertical extension
-    translate([x_disp, 0, bot_z_end])
-    cylinder(h=bvext, r=R);
+    translate([x_disp, 0, bot_z_end]) {
+        cylinder(h=bvext, r=R);
+        cylinder(h=bvext+R+v_shift, r=R*0.4);
+    }
     
     window();
 }
@@ -122,12 +128,19 @@ module horiz_cut(vert_drain=false) {
     else {
         // seg 2
         translate([0,hseg1_L*sin(hseg1_a), hseg1_L*cos(hseg1_a)]) {
-            rotate([-hseg2_a,0,hseg2_b])
-            cylinder(h=hseg2_L, r=R);
+            rotate([-hseg2_a,0,hseg2_b]) {
+                cylinder(h=hseg2_L, r=R);
+                // slot at the top of seg 2, for printing
+                translate([-R*0.35,-0.2-R,0])
+                cube([2*R*0.35, R, hseg2_L]);
+            }
         }
         
         // seg 3 start
-        translate(p3) sphere(r=R);
+        translate(p3) {
+            sphere(r=R);
+            cylinder(h=R+0.2, r=R*0.35);
+        }
         // connect p3 and p4
         translate(p4)
         rotate([
@@ -161,39 +174,64 @@ module 2x2_cut() {
     main_vert_cut();
     horiz_cut();
     translate([-x_h_shift,y_h_shift,0])
+    horiz_cut();
+    translate([-2*x_h_shift,2*y_h_shift,0])
     horiz_cut(vert_drain=true);
     
     translate([0,0,-(top_z_end - bot_z_end)]) {
         main_vert_cut();
         horiz_cut();
         translate([-x_h_shift,y_h_shift,0])
-        horiz_cut(vert_drain=true);    
+        horiz_cut();
+        translate([-2*x_h_shift,2*y_h_shift,0])
+        horiz_cut(vert_drain=true); 
+    }
+    
+    translate([0,0,-2*(top_z_end - bot_z_end)]) {
+        main_vert_cut();
+        horiz_cut();
+        translate([-x_h_shift,y_h_shift,0])
+        horiz_cut();
+        translate([-2*x_h_shift,2*y_h_shift,0])
+        horiz_cut(vert_drain=true); 
     }
 }
 //2x2_cut();
 
-module 2x2_box() {
+module 2x2_box(delta=0) {
     // main box
-    n_h_seg = 1;
-    n_v_seg = 1;
+    n_h_seg = 2;
+    n_v_seg = 2;
     translate([-x_h_shift/2, -(R+wall), -((top_z_end - bot_z_end)*n_v_seg + 2*R + 0.05)])
     cube([
-        x_h_shift/2 + right_x_end + wall,
-        R + 2*wall + back_y_end + y_h_shift*(n_h_seg-1),
+        x_h_shift/2 + right_x_end + wall + delta,
+        R + 2*wall + back_y_end + y_h_shift*(n_h_seg-1) + delta,
         hseg1_L*cos(hseg1_a) + R + wall + (top_z_end - bot_z_end)*n_v_seg + 2*R
     ]);
-    // side box
+    // side box 1
     translate([
-        -x_h_shift - x_h_shift/2 - wall,
+        -x_h_shift - x_h_shift/2 - delta,
         -(R+wall) + y_h_shift,
         -((top_z_end - bot_z_end)*n_v_seg + 2*R + 0.05)
     ])
     cube([
         x_h_shift + wall,
-        R + 2*wall + back_y_end + y_h_shift*(n_h_seg-2),
+        R + 2*wall + back_y_end + y_h_shift*(n_h_seg-2) + delta,
+        hseg1_L*cos(hseg1_a) + R + wall + (top_z_end - bot_z_end)*n_v_seg + 2*R
+    ]);
+    // side box 2
+    translate([
+        -2*x_h_shift - x_h_shift/2 - 2*delta,
+        -(R+wall) + 2*y_h_shift,
+        -((top_z_end - bot_z_end)*n_v_seg + 2*R + 0.05)
+    ])
+    cube([
+        x_h_shift + wall,
+        R + 2*wall + back_y_end + y_h_shift*(n_h_seg-3) + delta,
         hseg1_L*cos(hseg1_a) + R + wall + (top_z_end - bot_z_end)*n_v_seg + 2*R
     ]);
 }
+//2x2_box(delta=0.1);
 
 module draft() {
     difference() {
@@ -201,4 +239,53 @@ module draft() {
         2x2_cut();
     }
 }
-draft();
+//draft();
+
+module base() {
+    x_tot = R + right_x_end + wall + 2.5*x_h_shift;
+    y_tot = R + R + 2*wall + back_y_end + y_h_shift;
+    z_tot = 4*R;
+    
+    difference(){
+        translate([-R/2 ,-R/2 , -z_tot]) {
+            cube([x_tot, y_tot,z_tot]);
+        }
+        // hole for the main box
+        translate([2.5*x_h_shift, (R+wall), 0])
+        2x2_box(delta=0.1);
+        
+        // side window
+        hull() {
+            translate([2*R -0.2, -R/2-0.1, -R/2 - 2*R])
+            rotate([-90,0,0])
+            cylinder(h=2*y_h_shift + R/2 + 0.2, r = 2*R);
+            translate([x_tot-3*R +0.1, -R/2-0.1, -R/2 - 2*R])
+            rotate([-90,0,0])
+            cylinder(h=2*y_h_shift + R/2 + 0.2, r = 2*R);
+            // shift down
+            translate([2*R -0.2, -R/2-0.1, -R/2 - 2*R - 2*R])
+            rotate([-90,0,0])
+            cylinder(h=2*y_h_shift + R/2 + 0.2, r = 2*R);
+            translate([x_tot-3*R +0.1, -R/2-0.1, -R/2 - 2*R - 2*R ])
+            rotate([-90,0,0])
+            cylinder(h=2*y_h_shift + R/2 + 0.2, r = 2*R);
+        }
+    }
+}
+//rotate([180,0,0])
+//base();
+
+module base_bottom() {
+    
+    cube([
+        right_x_end + wall + 2.5*x_h_shift + 0.1,
+        R + 2*wall + back_y_end + y_h_shift + R/2,
+        wall
+    ]);
+    cube([
+        right_x_end + wall + 2.5*x_h_shift + 0.1,
+        R/2,
+        R/2
+    ]);
+}
+//base_bottom();
