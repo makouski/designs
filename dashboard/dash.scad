@@ -1,12 +1,12 @@
-$fa=2;
-$fs=0.4;
+$fa=5;
+$fs=1;
 
 // ball
 R = 7;
 
-wall = 1.2;
+wall = 1.6;
 // vertical pipeline
-r1 = R;
+r1 = 1.1*R;
 a1 = 65;
 v_shift = 2;
 
@@ -19,7 +19,7 @@ hseg2_L = 1*R;
 hseg2_a = 90;
 hseg2_b = 50;
 // curve parameters
-r_h = R;
+r_h = 1.1*R;
 a_h = 40;
 x_h_disp = r_h*(1-cos(a_h));
 z_h_disp = r_h*sin(a_h);
@@ -45,7 +45,7 @@ right_x_end = R + x_disp/sin(b1);
 back_y_end = R + p3.y;
 
 
-module ball() {
+module ball($fa=1, $fs=0.2) {
     delta = 0.7;
     new_r = R - delta/2;
     difference(){
@@ -53,8 +53,10 @@ module ball() {
         translate([0,0,-new_r])
         cylinder(h=new_r, r=R);
         // hole for filament piece
-        translate([0,0,-0.05])
-        cylinder(h=new_r - 1, d=2);
+        translate([0,0,-0.05]) {
+            cylinder(h=new_r - 1, d=2);
+            cylinder(h=1, d1=2.6, d2=2);
+        }
     }
 }
 //ball();
@@ -62,10 +64,12 @@ module ball() {
 module arc(r, ang) {
     rotate([90,0,0]){
         rotate_extrude(angle=ang)
-            difference(){
-                translate([r,0,0]) circle(r=R);
-                translate([-3*R,-3*R/2,0]) square(3*R, center=false);
-            }
+        translate([r,0,0]) circle(r=R);
+        // this allows to have r < R
+//            difference(){
+//                translate([r,0,0]) circle(r=R);
+//                translate([-3*R,-3*R/2,0]) square(3*R, center=false);
+//            }
         translate([r,0,0]) sphere(r=R);
         rotate([0,0,ang]) translate([r,0,0]) sphere(r=R);
     }
@@ -184,7 +188,7 @@ module 2x2_cut() {
         translate([-x_h_shift,y_h_shift,0])
         horiz_cut();
         translate([-2*x_h_shift,2*y_h_shift,0])
-        horiz_cut(vert_drain=true); 
+        horiz_cut(vert_drain=true);
     }
     
     translate([0,0,-2*(top_z_end - bot_z_end)]) {
@@ -193,7 +197,7 @@ module 2x2_cut() {
         translate([-x_h_shift,y_h_shift,0])
         horiz_cut();
         translate([-2*x_h_shift,2*y_h_shift,0])
-        horiz_cut(vert_drain=true); 
+        horiz_cut(vert_drain=true);
     }
 }
 //2x2_cut();
@@ -233,13 +237,13 @@ module 2x2_box(delta=0) {
 }
 //2x2_box(delta=0.1);
 
-module draft() {
+module dash() {
     difference() {
         2x2_box();
         2x2_cut();
     }
 }
-//draft();
+//dash();
 
 module base() {
     x_tot = R + right_x_end + wall + 2.5*x_h_shift;
@@ -276,11 +280,10 @@ module base() {
 //base();
 
 module base_bottom() {
-    
     cube([
         right_x_end + wall + 2.5*x_h_shift + 0.1,
         R + 2*wall + back_y_end + y_h_shift + R/2,
-        wall
+        1
     ]);
     cube([
         right_x_end + wall + 2.5*x_h_shift + 0.1,
