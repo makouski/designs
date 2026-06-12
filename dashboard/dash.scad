@@ -303,7 +303,7 @@ module base() {
         translate([2.5*x_h_shift, (R+wall), -(hseg1_L*cos(hseg1_a) + R + wall) + 0.1])
         2x2_box(delta=0.1);
         translate([2.5*x_h_shift, (R+wall), -(hseg1_L*cos(hseg1_a) + R + wall) - 1])
-        2x2_box(delta=1);
+        2x2_box(delta=1.1);
         
         // side window
         hull() {
